@@ -1,0 +1,32 @@
+name: Compile and Publish .NET Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 7.0.0
+
+    - name: Build .NET App
+      run: dotnet build CI_CDConsoleApp
+
+    - name: Publish Release
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: CI_CDConsoleApp/bin/Release/CI_CDConsoleApp.zip
+        asset_name: CI_CDConsoleApp-${{ github.ref }}.zip
+        asset_content_type: application/zip
